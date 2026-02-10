@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Back.Models
 {
-    public class ItemCarrinho
+    public class ItemCarrinhoModel
     {
         public int id { get; set; }
         public int produtoId { get; set; }
