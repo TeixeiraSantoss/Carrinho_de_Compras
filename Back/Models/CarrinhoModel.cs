@@ -8,7 +8,6 @@ namespace Back.Models
     public class CarrinhoModel
     {
         public int id { get; set; }
-        public List<ItemCarrinhoModel> listaItens { get; set; }
-        public int valorTotal { get; set; }
+        public ICollection<ItemCarrinhoModel> itens { get; set; } = new List<ItemCarrinhoModel>();
     }
 }
