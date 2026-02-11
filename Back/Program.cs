@@ -1,3 +1,6 @@
+using Back.Interface;
+using Back.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //Configuração do BD
@@ -11,6 +14,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Injetando dependencia nas Interfaces
+builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
 
 var app = builder.Build();
 
