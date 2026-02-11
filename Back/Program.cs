@@ -1,5 +1,7 @@
+using Back.Data;
 using Back.Interface;
 using Back.Service;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

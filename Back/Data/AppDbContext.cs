@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Back.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Back.Data
 {
@@ -16,13 +17,13 @@ namespace Back.Data
         {
             modelBuilder.Entity<ItemCarrinhoModel>()
                 .HasOne(ic => ic.Produto)
-                .WithMany(p => p.ItensCarrinho)
-                .HasForeignKey(ic => ic.ProdutoId);
+                .WithMany(p => p.itensCarrinho)
+                .HasForeignKey(ic => ic.produtoId);
 
             modelBuilder.Entity<ItemCarrinhoModel>()
                 .HasOne(ic => ic.Carrinho)
-                .WithMany(c => c.Itens)
-                .HasForeignKey(ic => ic.CarrinhoId);            
+                .WithMany(c => c.itens)
+                .HasForeignKey(ic => ic.carrinhoId);            
         }
 
         public DbSet<ProdutoModel> Produtos { get; set; }
