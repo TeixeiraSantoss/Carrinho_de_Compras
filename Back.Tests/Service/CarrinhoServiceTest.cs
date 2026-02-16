@@ -34,5 +34,35 @@ namespace Back.Tests.Service
             Assert.NotNull(carrinho);
             Assert.Equal(1, contexto.Carrinhos.Count());
         }
+        
+        [Fact]
+        public void AdicionarItem_DeveCriarNovoItem_QuandoProdutoNaoExistirNoCarrinho()
+        {
+            // Arrange
+            var contexto = CriarContexto(nameof(AdicionarItem_DeveCriarNovoItem_QuandoProdutoNaoExistirNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Produto Teste",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinho();
+
+            // Act
+            service.AdicionarItem(carrinho.id, produto.id, 1);
+
+            // Assert
+            var itemSalvo = contexto.ItensCarrinho.FirstOrDefault();
+
+            Assert.NotNull(itemSalvo);
+            Assert.Equal(1, itemSalvo.quantidade);
+            Assert.Equal(produto.id, itemSalvo.produtoId);
+        }
     }
 }
