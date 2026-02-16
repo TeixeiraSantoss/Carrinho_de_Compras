@@ -20,7 +20,7 @@ namespace Back.Service
 
         //
         //Cria carrinho
-        public CarrinhoModel CriaCarrinho()
+        public CarrinhoModel CriaCarrinhoService()
         {
             CarrinhoModel novoCarrinho = new CarrinhoModel {
                 itens = []
@@ -36,7 +36,7 @@ namespace Back.Service
 
         //
         //Adicionar Item
-        public void AdicionarItem(int produtoId, int carrinhoId, int quantidade)
+        public void AdicionarItemService(int produtoId, int carrinhoId, int quantidade)
         {
             //Verifica se a quantidade é menor que 1
             if(quantidade < 1)
@@ -48,7 +48,7 @@ namespace Back.Service
             //Verifica se existe um carrinho
             if(carrinho == null)
             {
-                carrinho = CriaCarrinho();
+                carrinho = CriaCarrinhoService();
             }
             
             var produto = _ctx.Produtos.FirstOrDefault(p => p.id == produtoId);
@@ -59,7 +59,8 @@ namespace Back.Service
             }
             
             var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == produtoId);
-            
+
+            //Adiciona a quantidade ao item existente  
             if(itemExistente != null)
             {
                 itemExistente.quantidade += quantidade;
@@ -76,6 +77,28 @@ namespace Back.Service
 
         }
         //Fim adicionar item
+        //
+
+        //
+        //Inicio Remover Item
+        public void RemoverItemService(int produtoId, int carrinhoId)
+        {
+            var carrinho = _ctx.Carrinhos.Include(c => c.itens).FirstOrDefault(c => c.id == carrinhoId);
+            if(carrinho == null)
+            {
+                throw new DomainException("Carrinho não encontrado");
+            }
+
+            var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == produtoId);
+            if(itemExistente == null)
+            {
+                throw new DomainException("Produto não encontrado no carrinho");
+            }
+
+            _ctx.ItensCarrinho.Remove(itemExistente);
+            _ctx.SaveChanges();
+        }
+        //Fim Remover item
         //
     }
 }
