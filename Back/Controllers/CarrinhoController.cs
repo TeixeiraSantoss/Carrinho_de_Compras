@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Back.DTOs.CarrinhoDTO;
 using Back.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,9 +27,10 @@ namespace Back.Controllers
         }
 
         [HttpPost("adicionarItem")]
-        public IActionResult AdicionarItem()
+        public IActionResult AdicionarItem([FromRoute] AddItemDTO dadosItem)
         {
-            
+            _carrinhoService.AdicionarItemService(dadosItem);
+            return Ok(new {message = "Item adicionado com sucesso"});
         }
     }
 }

@@ -11,6 +11,6 @@ namespace Back.Interface
     {
         public CarrinhoModel CriaCarrinhoService();
         public void AdicionarItemService(AddItemDTO dadosItem);
-        public void RemoverItemService(int produtoId, int carrinhoId);
+        public void RemoverItemService(RemoveItemDTO dadosItem);
     }
 }

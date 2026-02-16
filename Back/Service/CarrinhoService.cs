@@ -81,15 +81,15 @@ namespace Back.Service
 
         //
         //Inicio Remover Item
-        public void RemoverItemService(int produtoId, int carrinhoId)
+        public void RemoverItemService(RemoveItemDTO dadosItem)
         {
-            var carrinho = _ctx.Carrinhos.Include(c => c.itens).FirstOrDefault(c => c.id == carrinhoId);
+            var carrinho = _ctx.Carrinhos.Include(c => c.itens).FirstOrDefault(c => c.id == dadosItem.carrinhoId);
             if(carrinho == null)
             {
                 throw new DomainException("Carrinho não encontrado");
             }
 
-            var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == produtoId);
+            var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == dadosItem.produtoId);
             if(itemExistente == null)
             {
                 throw new DomainException("Produto não encontrado no carrinho");
