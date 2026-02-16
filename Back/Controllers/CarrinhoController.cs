@@ -32,5 +32,12 @@ namespace Back.Controllers
             _carrinhoService.AdicionarItemService(dadosItem);
             return Ok(new {message = "Item adicionado com sucesso"});
         }
+
+        [HttpDelete("removerItem")]
+        public IActionResult RemoverItem([FromRoute] RemoveItemDTO dadosItem)
+        {
+            _carrinhoService.RemoverItemService(dadosItem);
+            return Ok(new {message = "Item removido com sucesso"});
+        }
     }
 }
