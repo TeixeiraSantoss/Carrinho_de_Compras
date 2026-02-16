@@ -24,5 +24,11 @@ namespace Back.Controllers
             _carrinhoService.CriaCarrinhoService();
             return Ok(new {message = "Carrinho criado com sucesso"});
         }
+
+        [HttpPost("adicionarItem")]
+        public IActionResult AdicionarItem()
+        {
+            
+        }
     }
 }
