@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Back.Data;
 using Back.Models;
+using Back.DTOs.CarrinhoDTO;
 using Back.Service;
+using Back;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back.Tests.Service
@@ -28,7 +30,7 @@ namespace Back.Tests.Service
             var service = new CarrinhoService(contexto);
 
             // Act
-            var carrinho = service.CriaCarrinho();
+            var carrinho = service.CriaCarrinhoService();
         
             // Assert
             Assert.NotNull(carrinho);
@@ -52,10 +54,17 @@ namespace Back.Tests.Service
 
             var service = new CarrinhoService(contexto);
 
-            var carrinho = service.CriaCarrinho();
+            var carrinho = service.CriaCarrinhoService();
+
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1  
+            };
 
             // Act
-            service.AdicionarItem(carrinho.id, produto.id, 1);
+            service.AdicionarItemService(novoItem);
 
             // Assert
             var itemSalvo = contexto.ItensCarrinho.FirstOrDefault();
@@ -63,6 +72,155 @@ namespace Back.Tests.Service
             Assert.NotNull(itemSalvo);
             Assert.Equal(1, itemSalvo.quantidade);
             Assert.Equal(produto.id, itemSalvo.produtoId);
+        }
+
+        [Fact]
+        public void RemoverItem_DeveRemoverItem_QuandoItemExistirNoCarrinho()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(RemoverItem_DeveRemoverItem_QuandoItemExistirNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Omega 3",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1
+            };
+
+            service.AdicionarItemService(novoItem);
+
+            var itemExistente = new RemoveItemDTO
+            {
+                produtoId = novoItem.produtoId,
+                carrinhoId = novoItem.carrinhoId
+            };
+
+            //Act
+            service.RemoverItemService(itemExistente);
+
+            //Assert
+            var itemExcluido = contexto.ItensCarrinho.FirstOrDefault();
+
+            Assert.Null(itemExcluido);
+        }
+
+        [Fact]
+        public void SomaQuantidade_DeveSomarQuantidade_SeProdutoJaExistirNoBanco()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(SomaQuantidade_DeveSomarQuantidade_SeProdutoJaExistirNoBanco));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Teste quantidade",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+            
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1
+            };
+
+            service.AdicionarItemService(novoItem);
+
+            //Act
+            service.AdicionarItemService(novoItem);
+
+            //Assert
+            var itemExistente = contexto.ItensCarrinho.FirstOrDefault();
+
+            Assert.Equal(2, itemExistente.quantidade);
+        }
+        
+        [Fact]
+        public void AdicionarItemInvalido_DeveDarErro_QuandoQuantidadeForInvalida()
+        {
+            // Arrange
+            var contexto = CriarContexto(nameof(AdicionarItemInvalido_DeveDarErro_QuandoQuantidadeForInvalida));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Produto Teste",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 0
+            };
+
+            // Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.AdicionarItemService(novoItem)
+            );            
+
+            // Assert
+            Assert.Equal("Quantidade invalida", exception.Message);
+        }
+
+        [Fact]
+        public void RemoverItemInvalido_DeveDarErro_QuandoItemNaoExistirNoCarrinho()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(RemoverItemInvalido_DeveDarErro_QuandoItemNaoExistirNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Omega 3",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var itemExistente = new RemoveItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id
+            };
+
+            //Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.RemoverItemService(itemExistente)
+            );            
+
+            //Assert
+            Assert.Equal("Produto não encontrado no carrinho", exception.Message);
         }
     }
 }
