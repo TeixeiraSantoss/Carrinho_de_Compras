@@ -115,5 +115,42 @@ namespace Back.Tests.Service
 
             Assert.Null(itemExcluido);
         }
+
+        [Fact]
+        public void SomaQuantidade_DeveSomarQuantidade_SeProdutoJaExistirNoBanco()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(SomaQuantidade_DeveSomarQuantidade_SeProdutoJaExistirNoBanco));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Teste quantidade",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+            
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1
+            };
+
+            service.AdicionarItemService(novoItem);
+
+            //Act
+            service.AdicionarItemService(novoItem);
+
+            //Assert
+            var itemExistente = contexto.ItensCarrinho.FirstOrDefault();
+
+            Assert.Equal(2, itemExistente.quantidade);
+        }
     }
 }

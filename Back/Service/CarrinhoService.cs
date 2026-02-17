@@ -65,14 +65,17 @@ namespace Back.Service
             {
                 itemExistente.quantidade += dadosItem.quantidade;
             }
+            else
+            {
+                var novoItem = new ItemCarrinhoModel{
+                    produtoId = dadosItem.produtoId,
+                    carrinhoId = dadosItem.carrinhoId,
+                    quantidade = 1
+                };   
 
-            var novoItem = new ItemCarrinhoModel{
-                produtoId = dadosItem.produtoId,
-                carrinhoId = dadosItem.carrinhoId,
-                quantidade = 1
-            };
+                _ctx.ItensCarrinho.Add(novoItem);
+            }
 
-            _ctx.ItensCarrinho.Add(novoItem);
             _ctx.SaveChanges();
 
         }
