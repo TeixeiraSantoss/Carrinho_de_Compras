@@ -6,6 +6,7 @@ using Back.Data;
 using Back.Models;
 using Back.DTOs.CarrinhoDTO;
 using Back.Service;
+using Back;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back.Tests.Service
@@ -151,6 +152,41 @@ namespace Back.Tests.Service
             var itemExistente = contexto.ItensCarrinho.FirstOrDefault();
 
             Assert.Equal(2, itemExistente.quantidade);
+        }
+        
+        [Fact]
+        public void AdicionarItemInvalido_DeveDarErro_QuandoQuantidadeForInvalida()
+        {
+            // Arrange
+            var contexto = CriarContexto(nameof(AdicionarItemInvalido_DeveDarErro_QuandoQuantidadeForInvalida));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Produto Teste",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 0
+            };
+
+            // Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.AdicionarItemService(novoItem)
+            );            
+
+            // Assert
+            Assert.Equal("Quantidade invalida", exception.Message);
         }
     }
 }
