@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Back.Data;
 using Back.Models;
+using Back.DTOs.CarrinhoDTO;
 using Back.Service;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +29,7 @@ namespace Back.Tests.Service
             var service = new CarrinhoService(contexto);
 
             // Act
-            var carrinho = service.CriaCarrinho();
+            var carrinho = service.CriaCarrinhoService();
         
             // Assert
             Assert.NotNull(carrinho);
@@ -52,10 +53,17 @@ namespace Back.Tests.Service
 
             var service = new CarrinhoService(contexto);
 
-            var carrinho = service.CriaCarrinho();
+            var carrinho = service.CriaCarrinhoService();
+
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1  
+            };
 
             // Act
-            service.AdicionarItem(carrinho.id, produto.id, 1);
+            service.AdicionarItemService(novoItem);
 
             // Assert
             var itemSalvo = contexto.ItensCarrinho.FirstOrDefault();
@@ -63,6 +71,49 @@ namespace Back.Tests.Service
             Assert.NotNull(itemSalvo);
             Assert.Equal(1, itemSalvo.quantidade);
             Assert.Equal(produto.id, itemSalvo.produtoId);
+        }
+
+        [Fact]
+        public void RemoverItem_DeveRemoverItem_QuandoItemExistirNoCarrinho()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(RemoverItem_DeveRemoverItem_QuandoItemExistirNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Omega 3",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var novoItem = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1
+            };
+
+            service.AdicionarItemService(novoItem);
+
+            var itemExistente = new RemoveItemDTO
+            {
+                produtoId = novoItem.produtoId,
+                carrinhoId = novoItem.carrinhoId
+            };
+
+            //Act
+            service.RemoverItemService(itemExistente);
+
+            //Assert
+            var itemExcluido = contexto.ItensCarrinho.FirstOrDefault();
+
+            Assert.Null(itemExcluido);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Back.Service
 
         //
         //Cria carrinho
-        public CarrinhoModel CriaCarrinho()
+        public CarrinhoModel CriaCarrinhoService()
         {
             CarrinhoModel novoCarrinho = new CarrinhoModel {
                 itens = []
@@ -36,38 +36,39 @@ namespace Back.Service
 
         //
         //Adicionar Item
-        public void AdicionarItem(int produtoId, int carrinhoId, int quantidade)
+        public void AdicionarItemService(AddItemDTO dadosItem)
         {
             //Verifica se a quantidade é menor que 1
-            if(quantidade < 1)
+            if(dadosItem.quantidade < 1)
             {
                 throw new DomainException("Quantidade invalida");
             }
 
-            var carrinho = _ctx.Carrinhos.Include(c => c.itens).FirstOrDefault(c => c.id == carrinhoId);
+            var carrinho = _ctx.Carrinhos.Include(c => c.itens).FirstOrDefault(c => c.id == dadosItem.carrinhoId);
             //Verifica se existe um carrinho
             if(carrinho == null)
             {
-                carrinho = CriaCarrinho();
+                carrinho = CriaCarrinhoService();
             }
             
-            var produto = _ctx.Produtos.FirstOrDefault(p => p.id == produtoId);
+            var produto = _ctx.Produtos.FirstOrDefault(p => p.id == dadosItem.produtoId);
 
             if(produto == null)
             {
                 throw new DomainException("Produto não encontrado");
             }
             
-            var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == produtoId);
-            
+            var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == dadosItem.produtoId);
+
+            //Adiciona a quantidade ao item existente  
             if(itemExistente != null)
             {
-                itemExistente.quantidade += quantidade;
+                itemExistente.quantidade += dadosItem.quantidade;
             }
 
             var novoItem = new ItemCarrinhoModel{
-                produtoId = produtoId,
-                carrinhoId = carrinhoId,
+                produtoId = dadosItem.produtoId,
+                carrinhoId = dadosItem.carrinhoId,
                 quantidade = 1
             };
 
@@ -76,6 +77,28 @@ namespace Back.Service
 
         }
         //Fim adicionar item
+        //
+
+        //
+        //Inicio Remover Item
+        public void RemoverItemService(RemoveItemDTO dadosItem)
+        {
+            var carrinho = _ctx.Carrinhos.Include(c => c.itens).FirstOrDefault(c => c.id == dadosItem.carrinhoId);
+            if(carrinho == null)
+            {
+                throw new DomainException("Carrinho não encontrado");
+            }
+
+            var itemExistente = carrinho.itens.FirstOrDefault(i => i.produtoId == dadosItem.produtoId);
+            if(itemExistente == null)
+            {
+                throw new DomainException("Produto não encontrado no carrinho");
+            }
+
+            _ctx.ItensCarrinho.Remove(itemExistente);
+            _ctx.SaveChanges();
+        }
+        //Fim Remover item
         //
     }
 }
