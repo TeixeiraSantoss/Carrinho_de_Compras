@@ -188,5 +188,39 @@ namespace Back.Tests.Service
             // Assert
             Assert.Equal("Quantidade invalida", exception.Message);
         }
+
+        [Fact]
+        public void RemoverItemInvalido_DeveDarErro_QuandoItemNaoExistirNoCarrinho()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(RemoverItemInvalido_DeveDarErro_QuandoItemNaoExistirNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Omega 3",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var itemExistente = new RemoveItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id
+            };
+
+            //Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.RemoverItemService(itemExistente)
+            );            
+
+            //Assert
+            Assert.Equal("Produto não encontrado no carrinho", exception.Message);
+        }
     }
 }
