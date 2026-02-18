@@ -103,5 +103,21 @@ namespace Back.Service
         }
         //Fim Remover item
         //
+
+        //
+        //Inicio calculo total carrinho
+        public decimal CalculoTotalCarrinho(int carrinhoId) 
+        { 
+            CarrinhoModel carrinhoExistente = _ctx.Carrinhos.Include(c => c.itens).ThenInclude(i => i.Produto).FirstOrDefault(c => c.id == carrinhoId);
+
+            if(carrinhoExistente == null)
+            {
+                throw new DomainException("Nenhum carrinho encontrado");
+            }
+            
+            return carrinhoExistente.itens.Sum(i => i.Produto.preco * i.quantidade);
+        }
+        //Fim calculo total carrinho
+        //
     }
 }
