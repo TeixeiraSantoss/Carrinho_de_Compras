@@ -289,7 +289,27 @@ namespace Back.Tests.Service
         [Fact]
         public void SomarTotalCarrinhoVazio_DeveRetornarZero_QuandoCarrinhoEstiverVazio()
         {
-            
+            //Arrange
+            var contexto = CriarContexto(nameof(SomaTotalCarrinho_DeveSomarPrecoDosItens_QuandoHouverItemNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Teste total",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            //Act
+            var valorTotal = service.CalculoTotalCarrinho(carrinho.id);
+
+            //Assert
+            Assert.Equal(0, valorTotal);
         }
     }
 }
