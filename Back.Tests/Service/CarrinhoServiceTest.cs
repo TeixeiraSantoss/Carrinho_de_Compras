@@ -222,5 +222,41 @@ namespace Back.Tests.Service
             //Assert
             Assert.Equal("Produto não encontrado no carrinho", exception.Message);
         }
+
+        [Fact]
+        public void SomaTotalCarrinho_DeveSomarPrecoDosItens_QuandoHouverItemNoCarrinho()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(SomaTotalCarrinho_DeveSomarPrecoDosItens_QuandoHouverItemNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Teste total",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            var item = new AddItemDTO
+            {
+                produtoId = produto.id,
+                carrinhoId = carrinho.id,
+                quantidade = 1
+            };
+
+            service.AdicionarItemService(item);
+            service.AdicionarItemService(item);
+
+            //Act
+            var valorTotal = service.CalculoTotalCarrinho(carrinho.id);
+
+            //Assert
+            Assert.Equal(20, valorTotal);
+        }
     }
 }
