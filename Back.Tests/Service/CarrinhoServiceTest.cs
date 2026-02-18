@@ -8,6 +8,7 @@ using Back.DTOs.CarrinhoDTO;
 using Back.Service;
 using Back;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace Back.Tests.Service
 {
@@ -257,6 +258,58 @@ namespace Back.Tests.Service
 
             //Assert
             Assert.Equal(20, valorTotal);
+        }
+
+        [Fact]
+        public void SomarTotalCarrinhoInvalido_DeveLancarErro_QuandoCarrinhoNaoExistir()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(SomarTotalCarrinhoInvalido_DeveLancarErro_QuandoCarrinhoNaoExistir));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Teste total",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            //Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.CalculoTotalCarrinho(1)
+            );
+
+            //Assert
+            Assert.Equal("Nenhum carrinho encontrado", exception.Message);
+        }
+
+        [Fact]
+        public void SomarTotalCarrinhoVazio_DeveRetornarZero_QuandoCarrinhoEstiverVazio()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(SomaTotalCarrinho_DeveSomarPrecoDosItens_QuandoHouverItemNoCarrinho));
+
+            var produto = new ProdutoModel
+            {
+                nome = "Teste total",
+                preco = 10
+            };
+
+            contexto.Produtos.Add(produto);
+            contexto.SaveChanges();
+
+            var service = new CarrinhoService(contexto);
+
+            var carrinho = service.CriaCarrinhoService();
+
+            //Act
+            var valorTotal = service.CalculoTotalCarrinho(carrinho.id);
+
+            //Assert
+            Assert.Equal(0, valorTotal);
         }
     }
 }
