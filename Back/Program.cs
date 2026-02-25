@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 
 //Injetando dependencia nas Interfaces
 builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
+builder.Services.AddScoped<IProdutoService, ProdutoService>();
 
 var app = builder.Build();
 
