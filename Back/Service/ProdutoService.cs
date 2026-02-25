@@ -65,9 +65,9 @@ namespace Back.Service
             return produtoExistente;
         }
 
-        public void EditarProdutoService(EditProdutoDTO dadosProduto)
+        public void EditarProdutoService(EditProdutoDTO dadosProduto, int id)
         {
-            var produtoExistente = _ctx.Produtos.Find(dadosProduto.id);
+            ProdutoModel produtoExistente = _ctx.Produtos.Find(id);
 
             if(produtoExistente == null)
             {
@@ -77,6 +77,19 @@ namespace Back.Service
             produtoExistente.nome = dadosProduto.nome;
             produtoExistente.preco = dadosProduto.preco;
 
+            _ctx.SaveChanges();
+        }
+
+        public void DeletarProdutoService(int id)
+        {
+            ProdutoModel produtoExistente = _ctx.Produtos.Find(id);
+
+            if(produtoExistente == null)
+            {
+                throw new DomainException("Nenhum produto encontrado");
+            }
+
+            _ctx.Produtos.Remove(produtoExistente);
             _ctx.SaveChanges();
         }
     }

@@ -10,5 +10,7 @@ namespace Back.Interface
     {
         public void CadastrarProdutoService(CreateProdutoDTO dadosProduto);
         public List<ReadProdutoDTO> ListarProdutosService();
+        public void EditarProdutoService(EditProdutoDTO dadosProduto, int id);
+        public void DeletarProdutoService(int id);
     }
 }

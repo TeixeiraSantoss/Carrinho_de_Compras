@@ -27,4 +27,19 @@ public class ProdutoController : ControllerBase
     {
         return Ok(_produtoService.ListarProdutosService()); 
     }
+
+    [HttpPatch("editar/{id}")]
+    public IActionResult EditarProduto([FromRoute] int id, [FromBody] EditProdutoDTO dadosProduto)
+    {
+        _produtoService.EditarProdutoService(dadosProduto, id);
+
+        return Ok(new {message = "Produto editado com sucesso"});
+    }
+
+    [HttpDelete("deletar/{id}")]
+    public IActionResult DeletarProduto([FromRoute] int id)
+    {
+        _produtoService.DeletarProdutoService(id);
+        return Ok(new {message = "Produto removido com sucesso"});
+    }
 }
