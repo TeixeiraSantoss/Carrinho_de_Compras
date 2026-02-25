@@ -65,6 +65,19 @@ namespace Back.Service
             return produtoExistente;
         }
 
-        
+        public void EditarProdutoService(EditProdutoDTO dadosProduto)
+        {
+            var produtoExistente = _ctx.Produtos.Find(dadosProduto.id);
+
+            if(produtoExistente == null)
+            {
+                throw new DomainException("Nenhum produto encontrado");
+            }
+
+            produtoExistente.nome = dadosProduto.nome;
+            produtoExistente.preco = dadosProduto.preco;
+
+            _ctx.SaveChanges();
+        }
     }
 }
