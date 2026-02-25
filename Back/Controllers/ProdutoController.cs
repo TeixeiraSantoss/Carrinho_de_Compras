@@ -1,4 +1,5 @@
 using Back.Data;
+using Back.DTOs.ProdutoDTO;
 using Back.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,5 +13,18 @@ public class ProdutoController : ControllerBase
     public ProdutoController(IProdutoService produtoService)
     {
         _produtoService = produtoService;
+    }
+
+    [HttpPost("cadastrar")]
+    public IActionResult CadastrarProduto([FromBody] CreateProdutoDTO dadosProduto)
+    {
+        _produtoService.CadastrarProdutoService(dadosProduto);
+        return Ok(new {message = "Produto cadastrado com sucesso"});
+    }
+
+    [HttpGet("listar")]
+    public IActionResult ListarProdutos()
+    {
+        return Ok(_produtoService.ListarProdutosService()); 
     }
 }

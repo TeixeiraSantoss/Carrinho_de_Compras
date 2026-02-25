@@ -9,7 +9,7 @@ using Back.Models;
 
 namespace Back.Service
 {
-    public class ProdutoService: IProdutoService
+    public class ProdutoService : IProdutoService
     {
         private readonly AppDbContext _ctx;
 
@@ -18,7 +18,7 @@ namespace Back.Service
             _ctx = ctx;
         }
 
-        public void CadastrarProduto(CreateProdutoDTO dadosProduto)
+        public void CadastrarProdutoService(CreateProdutoDTO dadosProduto)
         {
             ProdutoModel produtoExistente = _ctx.Produtos.FirstOrDefault(p => p.id == dadosProduto.id);
 
@@ -36,6 +36,20 @@ namespace Back.Service
             _ctx.Produtos.Add(novoProduto);
             _ctx.SaveChanges();
         }
-        
+
+        public List<ReadProdutoDTO> ListarProdutosService()
+        {
+            List<ReadProdutoDTO> produtos = _ctx.Produtos.Select(p => new ReadProdutoDTO{ 
+                                                                            nome = p.nome,
+                                                                            preco = p.preco 
+                                                                            }).ToList();
+
+            if(produtos.Count() == 0)
+            {
+                throw new DomainException("Nenhum produto encontrado");
+            }
+
+            return produtos;
+        }
     }
 }
