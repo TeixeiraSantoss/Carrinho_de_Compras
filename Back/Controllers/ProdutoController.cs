@@ -1,3 +1,5 @@
+using Back.Data;
+using Back.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Back.Controllers;
@@ -6,4 +8,9 @@ namespace Back.Controllers;
 [Route("api/produto")]
 public class ProdutoController : ControllerBase
 {
+    private readonly IProdutoService _produtoService;
+    public ProdutoController(IProdutoService produtoService)
+    {
+        _produtoService = produtoService;
+    }
 }
