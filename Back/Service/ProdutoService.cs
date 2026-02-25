@@ -40,6 +40,7 @@ namespace Back.Service
         public List<ReadProdutoDTO> ListarProdutosService()
         {
             List<ReadProdutoDTO> produtos = _ctx.Produtos.Select(p => new ReadProdutoDTO{ 
+                                                                            id = p.id,
                                                                             nome = p.nome,
                                                                             preco = p.preco 
                                                                             }).ToList();
@@ -51,5 +52,19 @@ namespace Back.Service
 
             return produtos;
         }
+
+        public ReadProdutoDTO BuscarProdutoService(int id)
+        {
+            ReadProdutoDTO produtoExistente = _ctx.Produtos.Select(p => new ReadProdutoDTO{ id = p.id, nome = p.nome, preco = p.preco }).FirstOrDefault(p => p.id == id);
+
+            if(produtoExistente != null)
+            {
+                throw new DomainException("Nenhum Produto encontrado");
+            }
+
+            return produtoExistente;
+        }
+
+        
     }
 }

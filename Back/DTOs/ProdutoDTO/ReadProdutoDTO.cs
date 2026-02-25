@@ -7,6 +7,7 @@ namespace Back.DTOs.ProdutoDTO
 {
     public class ReadProdutoDTO
     {
+        public int id { get; set; }
         public string nome { get; set; }
         public decimal preco { get; set; }
     }
