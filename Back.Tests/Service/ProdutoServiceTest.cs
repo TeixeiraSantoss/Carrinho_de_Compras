@@ -79,5 +79,45 @@ namespace Back.Tests.Service
             //Assert
             Assert.Equal("Produto já cadastrado", exception.Message);
         }
+
+        [Fact]
+        public void ListaProduto_DeveListarOsProdutosCadastrados()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(ListaProduto_DeveListarOsProdutosCadastrados));
+
+            var service = new ProdutoService(contexto);
+
+            var produtoTeste = new CreateProdutoDTO
+            {
+                nome = "TESTE",
+                preco = 15
+            };
+
+            service.CadastrarProdutoService(produtoTeste);
+
+            //Act
+            List<ReadProdutoDTO> produtos = service.ListarProdutosService();
+
+            //Assert
+            Assert.NotNull(produtos);
+        }
+
+        [Fact]
+        public void ListaProduto_DeveLancarException_QuandoListaEstiverVazia()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(ListaProduto_DeveLancarException_QuandoListaEstiverVazia));
+
+            var service = new ProdutoService(contexto);
+
+            //Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.ListarProdutosService()
+            );
+            
+            //Arrange
+            Assert.Equal("Nenhum produto encontrado", exception.Message);
+        }
     }
 }
