@@ -24,6 +24,8 @@ namespace Back.Tests.Service
             return new AppDbContext(options);            
         }
 
+        //
+        //Inicio testes cadastro de produto
         [Fact]
         public void CadastraProduto_DeveCadastrarProduto()
         {
@@ -80,6 +82,11 @@ namespace Back.Tests.Service
             Assert.Equal("Produto já cadastrado", exception.Message);
         }
 
+        //Fim testes cadastro de produto
+        //
+
+        //
+        //Inicio testes listar produtos
         [Fact]
         public void ListaProduto_DeveListarOsProdutosCadastrados()
         {
@@ -119,5 +126,68 @@ namespace Back.Tests.Service
             //Arrange
             Assert.Equal("Nenhum produto encontrado", exception.Message);
         }
+
+        //Fim testes listar produtos
+        //
+
+        //
+        //Inicio testes editar produto
+        [Fact]
+        public void EditaProduto_DeveEditarProduto()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(EditaProduto_DeveEditarProduto));
+
+            var service = new ProdutoService(contexto);
+
+            var produtoTeste = new CreateProdutoDTO
+            {
+                nome = "TESTE",
+                preco = 15
+            };
+
+            service.CadastrarProdutoService(produtoTeste);
+
+            var produtoEditado = new EditProdutoDTO
+            {
+              nome = "Nome alterado",
+              preco = 10  
+            };
+
+            //Act
+            service.EditarProdutoService(produtoEditado, 1);
+
+            //Assert
+            var produtoExistente = contexto.Produtos.FirstOrDefault(p => p.id == 1);
+
+            Assert.NotNull(produtoExistente);
+            Assert.Equal("Nome alterado", produtoExistente.nome);
+            Assert.Equal(10, produtoExistente.preco);
+        }
+
+        [Fact]
+        public void EditaProduto_DeveLancarException_QuandoNaoHouverProdutoExistente()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(EditaProduto_DeveLancarException_QuandoNaoHouverProdutoExistente));
+
+            var service = new ProdutoService(contexto);
+            
+            var produtoEditado = new EditProdutoDTO
+            {
+              nome = "Nome alterado",
+              preco = 10  
+            };
+
+            //Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.EditarProdutoService(produtoEditado, 1)
+            );           
+
+            //Assert
+            Assert.Equal("Nenhum produto encontrado", exception.Message);
+        }
+        //Fim testes editar produto
+        //
     }
 }

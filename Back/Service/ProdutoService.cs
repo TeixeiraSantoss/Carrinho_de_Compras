@@ -53,18 +53,6 @@ namespace Back.Service
             return produtos;
         }
 
-        public ReadProdutoDTO BuscarProdutoService(int id)
-        {
-            ReadProdutoDTO produtoExistente = _ctx.Produtos.Select(p => new ReadProdutoDTO{ id = p.id, nome = p.nome, preco = p.preco }).FirstOrDefault(p => p.id == id);
-
-            if(produtoExistente != null)
-            {
-                throw new DomainException("Nenhum Produto encontrado");
-            }
-
-            return produtoExistente;
-        }
-
         public void EditarProdutoService(EditProdutoDTO dadosProduto, int id)
         {
             ProdutoModel produtoExistente = _ctx.Produtos.Find(id);
