@@ -189,5 +189,51 @@ namespace Back.Tests.Service
         }
         //Fim testes editar produto
         //
+
+        //
+        //Inicio testes excluir produto
+        [Fact]
+        public void ExcluirProduto_DeveExcluirProduto()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(ExcluirProduto_DeveExcluirProduto));
+
+            var service = new ProdutoService(contexto);
+
+            var produtoTeste = new CreateProdutoDTO
+            {
+                nome = "TESTE",
+                preco = 15
+            };
+
+            service.CadastrarProdutoService(produtoTeste);
+
+            //Act
+            service.DeletarProdutoService(1);
+
+            //Assert
+            var produtoExistente = contexto.Produtos.FirstOrDefault(p => p.id == 1);
+
+            Assert.Null(produtoExistente);
+        }
+
+        [Fact]
+        public void ExcluirProduto_DeveLancarException_QuandoTentarExcluirProdutoNaoCadastrado()
+        {
+            //Arrange
+            var contexto = CriarContexto(nameof(ExcluirProduto_DeveLancarException_QuandoTentarExcluirProdutoNaoCadastrado));
+
+            var service = new ProdutoService(contexto);
+
+            //Act
+            var exception = Assert.Throws<DomainException>(() =>
+                service.DeletarProdutoService(1)
+            );            
+
+            //Assert
+            Assert.Equal("Nenhum produto encontrado", exception.Message);
+        }
+        //Fim testes excluir produto
+        //
     }
 }
